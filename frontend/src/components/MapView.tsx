@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Polyline, Tooltip } from "react-leaflet";
 import type { GraphOut, RouteResult } from "../types";
 
@@ -9,8 +10,58 @@ interface Props {
 }
 
 const CENTER: [number, number] = [6.98, 79.95];
+const EXPANSION_STEP_MS = 55;
+const PATH_STEP_MS = 90;
 
 export default function MapView({ graph, route, start, goal }: Props) {
+  const [revealedExpansionCount, setRevealedExpansionCount] = useState(0);
+  const [revealedPathCount, setRevealedPathCount] = useState(0);
+
+  // Depend on `route` itself (object identity), not on start/goal/algorithm:
+  // every /api/route response is a freshly-parsed object, even for an
+  // identical start/goal/algorithm re-run, so this naturally re-animates on
+  // every "Run search" click without needing a separate request-id field.
+  useEffect(() => {
+    setRevealedExpansionCount(0);
+    setRevealedPathCount(0);
+
+    if (!route) return;
+
+    let cancelled = false;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    const expansionLength = route.expansion_order?.length ?? 0;
+    const pathLength = route.path?.length ?? 0;
+
+    const runPathStep = (i: number) => {
+      if (cancelled) return;
+      setRevealedPathCount(i);
+      if (i < pathLength) {
+        timers.push(setTimeout(() => runPathStep(i + 1), PATH_STEP_MS));
+      }
+    };
+
+    const runExpansionStep = (i: number) => {
+      if (cancelled) return;
+      setRevealedExpansionCount(i);
+      if (i < expansionLength) {
+        timers.push(setTimeout(() => runExpansionStep(i + 1), EXPANSION_STEP_MS));
+      } else if (pathLength > 0) {
+        timers.push(setTimeout(() => runPathStep(1), PATH_STEP_MS));
+      }
+    };
+
+    if (expansionLength > 0) {
+      timers.push(setTimeout(() => runExpansionStep(1), EXPANSION_STEP_MS));
+    } else if (pathLength > 0) {
+      timers.push(setTimeout(() => runPathStep(1), PATH_STEP_MS));
+    }
+
+    return () => {
+      cancelled = true;
+      timers.forEach(clearTimeout);
+    };
+  }, [route]);
+
   if (!graph) {
     return (
       <div className="flex h-full items-center justify-center text-sm text-slate-400">
@@ -24,11 +75,27 @@ export default function MapView({ graph, route, start, goal }: Props) {
     return n ? [n.lat, n.lon] : null;
   };
 
-  const pathLatLngs: [number, number][] =
-    route?.path?.map((n) => coordOf(n)).filter((c): c is [number, number] => c !== null) ?? [];
+  const expansionLength = route?.expansion_order?.length ?? 0;
+  const pathLength = route?.path?.length ?? 0;
 
-  const expandedSet = new Set(route?.expansion_order ?? []);
-  const pathSet = new Set(route?.path ?? []);
+  const visibleExpanded = route?.expansion_order?.slice(0, revealedExpansionCount) ?? [];
+  const visiblePath = route?.path?.slice(0, revealedPathCount) ?? [];
+
+  const visiblePathLatLngs: [number, number][] = visiblePath
+    .map(coordOf)
+    .filter((c): c is [number, number] => c !== null);
+
+  const expandedSet = new Set(visibleExpanded);
+  const pathSet = new Set(visiblePath);
+
+  // While a route is actively animating (expansion or path phase still
+  // running), don't paint start/goal yet — let the reveal finish first, then
+  // fall back to always showing the selected start/goal (matches the
+  // pre-animation behaviour for the initial/idle map state).
+  const animating =
+    !!route &&
+    (revealedExpansionCount < expansionLength ||
+      (pathLength > 0 && revealedPathCount < pathLength));
 
   return (
     <MapContainer center={CENTER} zoom={11} className="h-full w-full">
@@ -50,9 +117,9 @@ export default function MapView({ graph, route, start, goal }: Props) {
         );
       })}
 
-      {pathLatLngs.length > 1 && (
+      {visiblePathLatLngs.length > 1 && (
         <Polyline
-          positions={pathLatLngs}
+          positions={visiblePathLatLngs}
           pathOptions={{ color: "#028090", weight: 4, opacity: 0.9 }}
         />
       )}
@@ -69,8 +136,8 @@ export default function MapView({ graph, route, start, goal }: Props) {
 
         if (isExpanded) { color = "#4a6b8a"; radius = 5; }
         if (isOnPath) { color = "#028090"; radius = 6; }
-        if (isStart) { color = "#00a896"; radius = 8; }
-        if (isGoal) { color = "#c0392b"; radius = 8; }
+        if (!animating && isStart) { color = "#00a896"; radius = 8; }
+        if (!animating && isGoal) { color = "#c0392b"; radius = 8; }
 
         return (
           <CircleMarker
