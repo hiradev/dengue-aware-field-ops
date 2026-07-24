@@ -4,10 +4,16 @@ import type {
 
 const BASE = import.meta.env.VITE_API_BASE ?? "/api";
 
-async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE}${path}`);
-  if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
-  return res.json() as Promise<T>;
+async function get<T>(path: string, timeoutMs?: number): Promise<T> {
+  const controller = new AbortController();
+  const timer = timeoutMs ? setTimeout(() => controller.abort(), timeoutMs) : undefined;
+  try {
+    const res = await fetch(`${BASE}${path}`, { signal: controller.signal });
+    if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
+    return res.json() as Promise<T>;
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
 }
 
 async function post<T>(path: string, body: unknown): Promise<T> {
@@ -21,7 +27,7 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 }
 
 export const api = {
-  health: () => get<{ status: string }>("/health"),
+  health: (timeoutMs?: number) => get<{ status: string }>("/health", timeoutMs),
   graph: () => get<GraphOut>("/graph"),
   towns: () => get<string[]>("/nodes/towns"),
   hospitals: () => get<string[]>("/nodes/hospitals"),

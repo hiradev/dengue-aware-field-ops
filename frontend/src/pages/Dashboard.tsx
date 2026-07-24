@@ -10,6 +10,12 @@ import TriagePanel from "../components/TriagePanel";
 import DengueSummaryCard from "../components/DengueSummaryCard";
 import CompareChart from "../components/CompareChart";
 
+type BackendStatus = "checking" | "waking" | "ready" | "down";
+
+const HEALTH_TIMEOUT_MS = 10_000;
+const RETRY_DELAY_MS = 4_000;
+const MAX_WAKE_ATTEMPTS = 20; // ~ up to ~2.5 minutes, covers Render free-tier cold starts
+
 export default function Dashboard() {
   const [graph, setGraph] = useState<GraphOut | null>(null);
   const [towns, setTowns] = useState<string[]>([]);
@@ -29,8 +35,44 @@ export default function Dashboard() {
 
   const [error, setError] = useState<string | null>(null);
 
-  // Initial load: graph, towns, hospitals, symptoms, and real dengue data.
+  const [backendStatus, setBackendStatus] = useState<BackendStatus>("checking");
+  const [wakeAttempt, setWakeAttempt] = useState(0);
+  const [retryKey, setRetryKey] = useState(0);
+
+  // Poll /api/health until the backend responds. On a free hosting tier
+  // (e.g. Render) the backend spins down when idle, so the first request
+  // after a while wakes it up but can take up to ~50s to answer.
   useEffect(() => {
+    let cancelled = false;
+    setBackendStatus("checking");
+    setWakeAttempt(0);
+
+    (async () => {
+      for (let attempt = 1; attempt <= MAX_WAKE_ATTEMPTS; attempt++) {
+        if (cancelled) return;
+        setWakeAttempt(attempt);
+        try {
+          await api.health(HEALTH_TIMEOUT_MS);
+          if (!cancelled) setBackendStatus("ready");
+          return;
+        } catch {
+          if (cancelled) return;
+          setBackendStatus("waking");
+          await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+        }
+      }
+      if (!cancelled) setBackendStatus("down");
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [retryKey]);
+
+  // Once the backend is confirmed awake, load graph, towns, hospitals,
+  // symptoms, and real dengue data.
+  useEffect(() => {
+    if (backendStatus !== "ready") return;
     (async () => {
       try {
         const [g, t, h, s, d] = await Promise.all([
@@ -49,13 +91,15 @@ export default function Dashboard() {
         setStart(defaultStart);
         setGoal(defaultGoal);
       } catch (e) {
-        setError(
-          "Could not reach the backend API. Is it running? " +
-          "Start it with: uvicorn app.main:app --reload --port 8000"
-        );
+        setError("Backend woke up but the initial data load failed. Please retry.");
       }
     })();
-  }, []);
+  }, [backendStatus]);
+
+  const retryBackend = () => {
+    setError(null);
+    setRetryKey((k) => k + 1);
+  };
 
   const runRoute = async (s: string, g: string, algo: Algorithm) => {
     setStart(s); setGoal(g); setAlgorithm(algo);
@@ -83,11 +127,50 @@ export default function Dashboard() {
     }
   };
 
+  if (backendStatus === "checking" || backendStatus === "waking") {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-3 bg-slate-50 p-8 text-center">
+        <Header />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-teal-600 border-t-transparent" />
+        <p className="max-w-md text-sm text-slate-600">
+          {backendStatus === "checking"
+            ? "Connecting to the backend…"
+            : "Waking up the backend server — free-tier hosting spins it down when idle, " +
+              "so this can take up to a minute."}
+        </p>
+        <p className="text-xs text-slate-400">Attempt {wakeAttempt} of {MAX_WAKE_ATTEMPTS}</p>
+      </div>
+    );
+  }
+
+  if (backendStatus === "down") {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-3 bg-slate-50 p-8 text-center">
+        <Header />
+        <p className="max-w-md text-sm text-red-600">
+          The backend isn't responding. It may be down, or still starting up.
+        </p>
+        <button
+          onClick={retryBackend}
+          className="rounded bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:brightness-110"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div className="flex h-screen flex-col items-center justify-center gap-3 bg-slate-50 p-8 text-center">
         <Header />
         <p className="max-w-md text-sm text-red-600">{error}</p>
+        <button
+          onClick={retryBackend}
+          className="rounded bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:brightness-110"
+        >
+          Retry
+        </button>
       </div>
     );
   }
