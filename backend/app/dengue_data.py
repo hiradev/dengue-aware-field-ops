@@ -9,21 +9,27 @@ Weekly Epidemiological Reports.
 Cache-fallback: live fetch from GitHub, falling back to a committed CSV.
 Same design as the coursework notebook, independently implemented here.
 """
+import logging
 import tempfile
+from functools import lru_cache
 from pathlib import Path
 from typing import Dict, Tuple
 
 import pandas as pd
 import requests
 
+logger = logging.getLogger(__name__)
+
 LIVE_URL = "https://raw.githubusercontent.com/thiyangt/denguedatahub/main/data/srilanka_weekly_data.rda"
 CACHE_PATH = Path(__file__).parent / "data" / "srilanka_weekly_dengue.csv"
 OUR_GRAPH_DISTRICTS = ["Colombo", "Gampaha"]
 
 
+@lru_cache(maxsize=1)
 def load_weekly_data(cache_path: Path = CACHE_PATH) -> Tuple[pd.DataFrame, str]:
     try:
         import pyreadr
+        from pyreadr.custom_errors import LibrdataError, PyreadrError
         resp = requests.get(LIVE_URL, timeout=8)
         resp.raise_for_status()
         with tempfile.NamedTemporaryFile(suffix=".rda", delete=False) as tmp:
@@ -36,7 +42,10 @@ def load_weekly_data(cache_path: Path = CACHE_PATH) -> Tuple[pd.DataFrame, str]:
         df["week"] = df["week"].astype(int)
         df["cases"] = df["cases"].astype(int)
         mode = "live"
-    except Exception:
+    except (requests.RequestException, KeyError, ValueError, OSError,
+            PyreadrError, LibrdataError) as e:
+        logger.warning("Live dengue data fetch failed (%s: %s), falling back to cached CSV.",
+                        type(e).__name__, e)
         df = pd.read_csv(cache_path)
         mode = "cache"
 

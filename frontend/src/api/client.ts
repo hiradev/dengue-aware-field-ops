@@ -16,14 +16,21 @@ async function get<T>(path: string, timeoutMs?: number): Promise<T> {
   }
 }
 
-async function post<T>(path: string, body: unknown): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(`POST ${path} failed: ${res.status}`);
-  return res.json() as Promise<T>;
+async function post<T>(path: string, body: unknown, timeoutMs?: number): Promise<T> {
+  const controller = new AbortController();
+  const timer = timeoutMs ? setTimeout(() => controller.abort(), timeoutMs) : undefined;
+  try {
+    const res = await fetch(`${BASE}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    if (!res.ok) throw new Error(`POST ${path} failed: ${res.status}`);
+    return res.json() as Promise<T>;
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
 }
 
 export const api = {
@@ -44,7 +51,7 @@ export const api = {
     ),
 
   triage: (symptoms: string[], strategy = "safety_first") =>
-    post<TriageResponse>("/triage", { symptoms, strategy }),
+    post<TriageResponse>("/triage", { symptoms, strategy }, 15_000),
 
   dengueSummary: (recentWeeks = 12) =>
     get<DengueSummary>(`/dengue-summary?recent_weeks=${recentWeeks}`),

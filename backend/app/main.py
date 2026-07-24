@@ -10,6 +10,7 @@ dengue_app.html page.
 Run: uvicorn app.main:app --reload --port 8000
 Docs: http://localhost:8000/docs
 """
+import logging
 import os
 from functools import lru_cache
 from typing import List, Optional
@@ -22,6 +23,8 @@ from .models import (
     DengueSummary, EdgeOut, GraphOut, NodeOut, RouteComparison,
     RouteResult, TraceStep, TriageRequest, TriageResponse,
 )
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
 app = FastAPI(
     title="Dengue-Aware Field Response API",

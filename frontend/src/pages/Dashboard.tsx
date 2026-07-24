@@ -1,14 +1,17 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { api } from "../api/client";
 import type {
   Algorithm, DengueSummary, GraphOut, RouteComparison, RouteResult, TriageResponse,
 } from "../types";
 import Header from "../components/Header";
-import MapView from "../components/MapView";
 import RoutePanel from "../components/RoutePanel";
 import TriagePanel from "../components/TriagePanel";
 import DengueSummaryCard from "../components/DengueSummaryCard";
-import CompareChart from "../components/CompareChart";
+
+// Leaflet and Recharts are the largest runtime deps — split them out of the
+// main bundle so the initial load doesn't pay for both up front.
+const MapView = lazy(() => import("../components/MapView"));
+const CompareChart = lazy(() => import("../components/CompareChart"));
 
 type BackendStatus = "checking" | "waking" | "ready" | "down";
 
@@ -108,8 +111,9 @@ export default function Dashboard() {
       const [r, c] = await Promise.all([api.route(s, g, algo), api.compare(s, g)]);
       setRoute(r);
       setComparison(c);
-    } catch {
-      setError("Route request failed.");
+    } catch (e) {
+      const detail = e instanceof Error ? e.message : String(e);
+      setError(`Route request failed: ${detail}`);
     } finally {
       setRouteLoading(false);
     }
@@ -120,8 +124,9 @@ export default function Dashboard() {
     try {
       const r = await api.triage(selected, "safety_first");
       setTriageResult(r);
-    } catch {
-      setError("Triage request failed.");
+    } catch (e) {
+      const detail = e instanceof Error ? e.message : String(e);
+      setError(`Triage request failed: ${detail}`);
     } finally {
       setTriageLoading(false);
     }
@@ -129,7 +134,7 @@ export default function Dashboard() {
 
   if (backendStatus === "checking" || backendStatus === "waking") {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-3 bg-slate-50 p-8 text-center">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-slate-50 p-8 text-center">
         <Header />
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-teal-600 border-t-transparent" />
         <p className="max-w-md text-sm text-slate-600">
@@ -145,7 +150,7 @@ export default function Dashboard() {
 
   if (backendStatus === "down") {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-3 bg-slate-50 p-8 text-center">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-slate-50 p-8 text-center">
         <Header />
         <p className="max-w-md text-sm text-red-600">
           The backend isn't responding. It may be down, or still starting up.
@@ -162,7 +167,7 @@ export default function Dashboard() {
 
   if (error) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-3 bg-slate-50 p-8 text-center">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-slate-50 p-8 text-center">
         <Header />
         <p className="max-w-md text-sm text-red-600">{error}</p>
         <button
@@ -176,17 +181,25 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen flex-col bg-slate-50">
+    <div className="flex min-h-screen flex-col bg-slate-50 lg:h-screen">
       <Header />
-      <div className="grid flex-1 grid-cols-1 gap-4 overflow-hidden p-4 lg:grid-cols-[1fr_380px]">
-        <div className="flex flex-col gap-4 overflow-hidden">
-          <div className="min-h-[320px] flex-1 overflow-hidden rounded-lg border border-slate-200">
-            <MapView graph={graph} route={route} start={start} goal={goal} />
+      <div className="grid flex-1 grid-cols-1 gap-4 p-4 lg:grid-cols-[1fr_380px] lg:overflow-hidden">
+        <div className="flex flex-col gap-4 lg:overflow-hidden">
+          <div className="h-72 overflow-hidden rounded-lg border border-slate-200 sm:h-96 lg:h-auto lg:min-h-[320px] lg:flex-1">
+            <Suspense fallback={
+              <div className="flex h-full items-center justify-center text-sm text-slate-400">
+                Loading map…
+              </div>
+            }>
+              <MapView graph={graph} route={route} start={start} goal={goal} />
+            </Suspense>
           </div>
-          <CompareChart comparison={comparison} />
+          <Suspense fallback={null}>
+            <CompareChart comparison={comparison} />
+          </Suspense>
         </div>
 
-        <div className="flex flex-col gap-4 overflow-y-auto pr-1">
+        <div className="flex flex-col gap-4 lg:overflow-y-auto lg:pr-1">
           <DengueSummaryCard summary={summary} />
           <RoutePanel
             towns={towns} hospitals={hospitals}
