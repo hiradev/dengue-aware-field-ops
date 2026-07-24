@@ -1,0 +1,1 @@
+{"root":["./src/main.tsx","./src/vite-env.d.ts","./src/api/client.ts","./src/components/comparechart.tsx","./src/components/denguesummarycard.tsx","./src/components/header.tsx","./src/components/mapview.tsx","./src/components/routepanel.tsx","./src/components/triagepanel.tsx","./src/pages/dashboard.tsx","./src/types/index.ts"],"version":"5.9.3"}

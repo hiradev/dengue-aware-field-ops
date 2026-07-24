@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-teal-950: #0e2a33;
+  --color-teal-700: #028090;
+  --color-teal-600: #00a896;
+  --color-teal-300: #6fd3c7;
+  --color-danger: #c0392b;
+  --color-warn: #d98c2b;
+}
+
+body {
+  background-color: #f4f7f6;
+  color: #12262c;
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+}
