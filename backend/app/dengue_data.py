@@ -7,7 +7,10 @@ Weekly, district-level, 2006-present, scraped from the Epidemiology Unit's
 Weekly Epidemiological Reports.
 
 Cache-fallback: live fetch from GitHub, falling back to a committed CSV.
-Same design as the coursework notebook, independently implemented here.
+
+Note: the coursework notebook does not use this data source or this
+cache-fallback pattern -- it is fully synthetic/self-contained by design.
+This module is unique to this companion app.
 """
 import logging
 import tempfile

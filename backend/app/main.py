@@ -18,10 +18,10 @@ from typing import List, Optional
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-from . import dengue_data, expert_system, graph_data, heuristics, search
+from . import census_data, dengue_data, expert_system, graph_data, heuristics, rainfall_data, search, wer_scraper
 from .models import (
-    DengueSummary, EdgeOut, GraphOut, NodeOut, RouteComparison,
-    RouteResult, TraceStep, TriageRequest, TriageResponse,
+    DengueSummary, DistrictIncidence, EdgeOut, GraphOut, NodeOut, RainfallContext,
+    RouteComparison, RouteResult, TraceStep, TriageRequest, TriageResponse, WERSnapshot,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -166,3 +166,71 @@ def dengue_summary(recent_weeks: int = 12):
         top_priority_weight=round(weights.get(top_cluster, 0.0), 1),
         all_cluster_weights={k: round(v, 1) for k, v in weights.items()},
     )
+
+
+@app.get("/api/district-incidence", response_model=List[DistrictIncidence])
+def district_incidence(recent_weeks: int = 12):
+    """
+    Population-normalised dengue burden (cases per 100,000 people), using real
+    Census 2024 district population figures. This is a genuinely better
+    comparison than raw case counts -- a bigger district looks worse on raw
+    counts even if its per-person risk is actually lower.
+
+    Resolves the earlier documented limitation: cluster_weights() still uses
+    an even split within a district (public data doesn't resolve below
+    district level), but THIS endpoint gives a properly normalised,
+    district-level comparison that raw counts alone cannot.
+    """
+    df, _ = dengue_data.load_weekly_data()
+    totals = dengue_data.recent_district_totals(df, dengue_data.OUR_GRAPH_DISTRICTS, n_weeks=recent_weeks)
+    incidence = census_data.compare_incidence(totals)
+
+    return [
+        DistrictIncidence(
+            district=d,
+            cases=v["cases"],
+            population=v["population"],
+            incidence_per_100k=v["incidence_per_100k"],
+            census_vintage=census_data.CENSUS_2024_DISTRICT_POPULATION[d]["vintage"],
+            census_source=census_data.CENSUS_2024_DISTRICT_POPULATION[d]["source"],
+        )
+        for d, v in incidence.items()
+    ]
+
+
+@app.get("/api/wer-latest", response_model=WERSnapshot)
+def wer_latest():
+    """
+    Latest single-week dengue snapshot fetched LIVE directly from the
+    Epidemiology Unit's own Weekly Epidemiological Report -- independent of
+    the denguedatahub aggregated series used elsewhere, as a genuine
+    cross-check from the primary source itself.
+
+    Scrapes the WER listing page to find the current report (filenames carry
+    an unpredictable hash and cannot be constructed from a pattern), then
+    parses Table 1 for Colombo/Gampaha dengue figures. Falls back to a real,
+    dated snapshot captured during development if the live fetch or parse
+    fails for any reason.
+    """
+    snap = wer_scraper.fetch_latest_dengue_snapshot()
+    return WERSnapshot(
+        mode=snap["mode"],
+        report_label=snap.get("report_label"),
+        source_url=snap.get("source_url"),
+        districts=snap["districts"],
+    )
+
+
+@app.get("/api/rainfall-context", response_model=RainfallContext)
+def rainfall_context():
+    """
+    Contextual rainfall data (HDX/WFP, CHIRPS-derived) for the report's
+    introduction -- monsoon seasonality background ONLY. Never used as a
+    feature by any algorithm. Returns available=False, honestly, if neither
+    a live fetch nor a manually-placed cache file succeeds -- no fabricated
+    numbers are ever substituted.
+    """
+    result = rainfall_data.load_rainfall()
+    if result is None:
+        return RainfallContext(available=False)
+    return RainfallContext(available=True, mode=result["mode"], data=result["data"])

@@ -1,5 +1,6 @@
 import type {
-  Algorithm, DengueSummary, GraphOut, RouteComparison, RouteResult, TriageResponse,
+  Algorithm, DengueSummary, DistrictIncidence, GraphOut, RainfallContext,
+  RouteComparison, RouteResult, TriageResponse, WERSnapshot,
 } from "../types";
 
 const BASE = import.meta.env.VITE_API_BASE ?? "/api";
@@ -55,4 +56,11 @@ export const api = {
 
   dengueSummary: (recentWeeks = 12) =>
     get<DengueSummary>(`/dengue-summary?recent_weeks=${recentWeeks}`),
+
+  districtIncidence: (recentWeeks = 12) =>
+    get<DistrictIncidence[]>(`/district-incidence?recent_weeks=${recentWeeks}`),
+
+  werLatest: () => get<WERSnapshot>("/wer-latest", 20_000),
+
+  rainfallContext: () => get<RainfallContext>("/rainfall-context", 10_000),
 };

@@ -67,3 +67,26 @@ export interface DengueSummary {
 }
 
 export type Algorithm = "bfs" | "ucs" | "astar";
+
+export interface DistrictIncidence {
+  district: string;
+  cases: number;
+  population: number;
+  incidence_per_100k: number;
+  census_vintage: string;
+  census_source: string;
+}
+
+export interface WERSnapshot {
+  mode: "live" | "cache";
+  report_label: string | null;
+  source_url: string | null;
+  districts: Record<string, { dengue_week: number; dengue_cumulative_2025: number }>;
+}
+
+export interface RainfallContext {
+  available: boolean;
+  mode: "live" | "manual_cache" | null;
+  data: Record<string, { latest_date: string; rainfall_mm_10day: number }>;
+  note: string;
+}

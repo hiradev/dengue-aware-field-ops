@@ -43,9 +43,17 @@ See `backend/README.md` and `frontend/README.md` for full detail on each half.
 ## Real data
 
 The `/api/dengue-summary` endpoint pulls live weekly, district-level dengue
-case data from the `denguedatahub` package (Talagala, 2024) — the same source
-as the coursework notebook — with a cache fallback. The dashboard's default
-case cluster is chosen from this real data, not hardcoded.
+case data from the `denguedatahub` package (Talagala, 2024), with a cache
+fallback. The dashboard's default case cluster is chosen from this real data,
+not hardcoded.
+
+**Note:** the coursework notebook (`Cw1_STUDENTID_Notebook.ipynb`) does
+*not* use this data source — it's fully self-contained with a hand-estimated
+road network and synthetic patient vignettes, by design, so it stays
+gradeable with zero external dependencies. This app is a separate,
+independent exploration of what real-data integration could look like; the
+two are not the same artefact and should not be described as sharing a data
+source.
 
 ## Priority reminder
 

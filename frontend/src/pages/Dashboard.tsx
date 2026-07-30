@@ -7,6 +7,7 @@ import Header from "../components/Header";
 import RoutePanel from "../components/RoutePanel";
 import TriagePanel from "../components/TriagePanel";
 import DengueSummaryCard from "../components/DengueSummaryCard";
+import DataVerificationCard from "../components/DataVerificationCard";
 
 // Leaflet and Recharts are the largest runtime deps — split them out of the
 // main bundle so the initial load doesn't pay for both up front.
@@ -201,6 +202,7 @@ export default function Dashboard() {
 
         <div className="flex flex-col gap-4 lg:overflow-y-auto lg:pr-1">
           <DengueSummaryCard summary={summary} />
+          <DataVerificationCard />
           <RoutePanel
             towns={towns} hospitals={hospitals}
             start={start} goal={goal} algorithm={algorithm}

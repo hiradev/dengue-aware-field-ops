@@ -75,3 +75,33 @@ class DengueSummary(BaseModel):
     top_priority_district: str
     top_priority_weight: float
     all_cluster_weights: Dict[str, float]
+
+
+class DistrictIncidence(BaseModel):
+    """Population-normalised dengue burden -- from Census 2024 + real case data."""
+    district: str
+    cases: int
+    population: int
+    incidence_per_100k: float
+    census_vintage: str
+    census_source: str
+
+
+class WERSnapshot(BaseModel):
+    """Latest single-week cross-check from the Epidemiology Unit's own WER,
+    independent of the denguedatahub aggregated series."""
+    mode: str  # "live" | "cache"
+    report_label: Optional[str] = None
+    source_url: Optional[str] = None
+    districts: Dict[str, Dict[str, int]]
+
+
+class RainfallContext(BaseModel):
+    """Background context only -- NOT used as a model input anywhere."""
+    available: bool
+    mode: Optional[str] = None  # "live" | "manual_cache" | None
+    data: Dict[str, Dict] = Field(default_factory=dict)
+    note: str = (
+        "Rainfall is contextual background for the report introduction only. "
+        "It is never used as a feature by any algorithm in this project."
+    )
