@@ -1,5 +1,5 @@
 """
-dengue_data.py — real Sri Lankan dengue surveillance data.
+dengue_data.py - real Sri Lankan dengue surveillance data.
 
 Source: `denguedatahub` R package (Talagala, 2024), R-Consortium-funded,
 maintained by Dr Thiyanga S. Talagala, University of Sri Jayewardenepura.

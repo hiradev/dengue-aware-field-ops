@@ -25,7 +25,7 @@ export default function CompareChart({ comparison }: { comparison: RouteComparis
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-4">
       <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
-        Comparison A — nodes expanded ({comparison.start} → {comparison.goal})
+        Comparison A - nodes expanded ({comparison.start} → {comparison.goal})
       </h3>
       <div style={{ width: "100%", height: 180 }}>
         <ResponsiveContainer>
@@ -48,7 +48,7 @@ export default function CompareChart({ comparison }: { comparison: RouteComparis
       </div>
       <p className="mt-2 text-[11px] text-slate-500">
         Path cost: {data.map((d) => `${d.algorithm} ${d.cost_km.toFixed(1)}km`).join(" · ")}
-        {" — "}
+        {" - "}
         {data.every((d) => Math.abs(d.cost_km - optimalCost) < 0.01)
           ? "all three found the optimal route"
           : "BFS returned a longer route (non-uniform edge costs)"}

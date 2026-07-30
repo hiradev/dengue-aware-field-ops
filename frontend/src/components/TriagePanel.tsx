@@ -99,7 +99,7 @@ export default function TriagePanel({ symptoms, loading, result, onRun }: Props)
 
       <p className="mt-3 rounded border border-dashed border-red-200 bg-red-50 p-2 text-[10.5px] text-red-600">
         ⚠ Coursework simplification of WHO/NDCU criteria. Not a validated clinical
-        instrument — must not be used for patient care.
+        instrument - must not be used for patient care.
       </p>
     </div>
   );

@@ -1,4 +1,4 @@
-# dengue-field-ops — demo application
+# dengue-field-ops - demo application
 
 A working, browsable demonstration of the Dengue-Aware Field Response System,
 built as a stretch goal alongside the CW1 coursework notebook. Stack:
@@ -8,7 +8,7 @@ built as a stretch goal alongside the CW1 coursework notebook. Stack:
 ## ⚠️ Relationship to the coursework notebook
 
 This app **independently re-implements** the search algorithms and the
-rule-based expert system — it does not import the notebook, and the notebook
+rule-based expert system - it does not import the notebook, and the notebook
 does not depend on this app. That separation is deliberate: the graded
 notebook must remain self-contained and runnable with zero external
 dependencies beyond what's in its own setup cell, regardless of what happens
@@ -20,7 +20,7 @@ notebook's `v1.0-frozen` tag.
 
 ## Quick start
 
-**Terminal 1 — backend:**
+**Terminal 1 - backend:**
 ```powershell
 cd backend
 python -m venv .venv
@@ -29,7 +29,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
 
-**Terminal 2 — frontend:**
+**Terminal 2 - frontend:**
 ```powershell
 cd frontend
 npm install
@@ -48,7 +48,7 @@ fallback. The dashboard's default case cluster is chosen from this real data,
 not hardcoded.
 
 **Note:** the coursework notebook (`Cw1_STUDENTID_Notebook.ipynb`) does
-*not* use this data source — it's fully self-contained with a hand-estimated
+*not* use this data source - it's fully self-contained with a hand-estimated
 road network and synthetic patient vignettes, by design, so it stays
 gradeable with zero external dependencies. This app is a separate,
 independent exploration of what real-data integration could look like; the
@@ -57,7 +57,7 @@ source.
 
 ## Priority reminder
 
-CW1 submission is the priority. This app is explicitly a stretch goal — if
+CW1 submission is the priority. This app is explicitly a stretch goal - if
 building it starts eating into report-writing or viva-prep time, stop and
 come back to it after submission. The notebook alone already satisfies the
 brief.

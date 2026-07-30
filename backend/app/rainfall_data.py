@@ -1,5 +1,5 @@
 """
-rainfall_data.py — HDX "Sri Lanka: Rainfall Indicators at Subnational Level"
+rainfall_data.py - HDX "Sri Lanka: Rainfall Indicators at Subnational Level"
 (WFP, CHIRPS v2), for CONTEXT ONLY -- never as a model input. See the
 project's module-content constraint: only search, knowledge representation,
 and decision-tree techniques are in scope; rainfall is background framing for

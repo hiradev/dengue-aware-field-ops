@@ -1,9 +1,9 @@
 """
-expert_system.py — rule-based dengue triage, forward chaining, from scratch.
+expert_system.py - rule-based dengue triage, forward chaining, from scratch.
 
 Independently re-implemented for this API (see graph_data.py docstring for why).
 Rules, conflict-resolution strategies, and the halt-on-goal design are identical
-to the verified notebook implementation — including the "derive before you
+to the verified notebook implementation - including the "derive before you
 conclude" fix for the safety-first strategy (see the notebook for the bug story;
 this file ships the FIXED, correct version only).
 """

@@ -1,7 +1,7 @@
-# Backend — FastAPI
+# Backend - FastAPI
 
 Independently-implemented API layer. Does **not** import the coursework
-notebook — the algorithms (BFS/UCS/A*, forward-chaining expert system) are
+notebook - the algorithms (BFS/UCS/A*, forward-chaining expert system) are
 re-implemented here from scratch, matching the notebook's verified behaviour,
 so the notebook stays fully self-contained and gradeable on its own.
 
@@ -20,8 +20,8 @@ pip install -r requirements.txt
 python scripts\refresh_cache.py
 ```
 
-Not required to run the API — `/api/dengue-summary` tries a live fetch first
-on every call — but running this once means there's a tested local fallback
+Not required to run the API - `/api/dengue-summary` tries a live fetch first
+on every call - but running this once means there's a tested local fallback
 if you're ever offline.
 
 ## Run

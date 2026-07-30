@@ -1,5 +1,5 @@
 """
-heuristics.py — straight-line (haversine) heuristic, admissible by construction
+heuristics.py - straight-line (haversine) heuristic, admissible by construction
 because edges are always haversine x detour_factor (detour_factor > 1).
 """
 import math

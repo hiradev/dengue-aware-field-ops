@@ -1,4 +1,4 @@
-# Frontend — React + TypeScript + Vite
+# Frontend - React + TypeScript + Vite
 
 React 19, TypeScript, Vite, Tailwind CSS v4, Leaflet (via react-leaflet),
 Recharts, React Router v7.
@@ -27,13 +27,13 @@ no CORS configuration is needed beyond what's already in `backend/app/main.py`.
 
 ## What's on the dashboard
 
-- **Map** — the real Colombo/Gampaha graph, animates the selected search
+- **Map** - the real Colombo/Gampaha graph, animates the selected search
   algorithm's path and (implicitly, via node styling) which nodes were
   expanded.
-- **Comparison chart** — Comparison A (nodes expanded, BFS vs UCS vs A\*) for
+- **Comparison chart** - Comparison A (nodes expanded, BFS vs UCS vs A\*) for
   whatever start/goal pair is currently selected, computed live by the API.
-- **Dengue summary card** — real surveillance data pulled from the backend;
+- **Dengue summary card** - real surveillance data pulled from the backend;
   shows whether it loaded in `live` or `cache` mode, and the current
   highest-priority case cluster.
-- **Triage panel** — toggle symptoms, get a recommendation with the full
+- **Triage panel** - toggle symptoms, get a recommendation with the full
   rule-firing explanation trace.

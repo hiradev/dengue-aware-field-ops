@@ -1,8 +1,8 @@
 """
-main.py — FastAPI application for the Dengue-Aware Field Response demo app.
+main.py - FastAPI application for the Dengue-Aware Field Response demo app.
 
 This is a SEPARATE, independently-implemented demonstration app. It does not
-import from, or depend on, the coursework notebook — the notebook remains
+import from, or depend on, the coursework notebook - the notebook remains
 fully self-contained and gradeable on its own. This app exists to give the
 project a working, browsable interface beyond the notebook and the static
 dengue_app.html page.
@@ -91,7 +91,7 @@ def compare(
     start: str = Query(...),
     goal: str = Query(...),
 ):
-    """Run all three algorithms on the same start/goal pair — Comparison A, live."""
+    """Run all three algorithms on the same start/goal pair - Comparison A, live."""
     g = get_graph()
     if start not in g.nodes or goal not in g.nodes:
         raise HTTPException(404, "Unknown start or goal node")

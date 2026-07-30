@@ -84,7 +84,7 @@ export default function RoutePanel({
         <div className="mt-4 grid grid-cols-3 gap-2 text-center">
           <div className="rounded bg-slate-50 p-2">
             <div className="text-lg font-bold text-teal-700">
-              {route.cost_km?.toFixed(1) ?? "—"}
+              {route.cost_km?.toFixed(1) ?? "-"}
             </div>
             <div className="text-[10px] uppercase text-slate-400">km</div>
           </div>

@@ -1,5 +1,5 @@
 """
-search.py — BFS, Uniform-Cost Search, A*, implemented FROM SCRATCH.
+search.py - BFS, Uniform-Cost Search, A*, implemented FROM SCRATCH.
 
 No networkx, no library shortest-path calls. Mirrors the coursework notebook's
 implementation exactly, so results are consistent between the graded artefact

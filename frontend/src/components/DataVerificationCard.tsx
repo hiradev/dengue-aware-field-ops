@@ -3,10 +3,10 @@ import { api } from "../api/client";
 import type { DistrictIncidence, RainfallContext, WERSnapshot } from "../types";
 
 /**
- * DataVerificationCard — surfaces the three supplementary data sources added
+ * DataVerificationCard - surfaces the three supplementary data sources added
  * after the initial build: Census-normalised incidence, a live WER
  * cross-check, and rainfall context. Each loads independently and fails
- * independently — one source being unavailable never blocks the others.
+ * independently - one source being unavailable never blocks the others.
  */
 export default function DataVerificationCard() {
   const [incidence, setIncidence] = useState<DistrictIncidence[] | null>(null);
@@ -50,7 +50,7 @@ export default function DataVerificationCard() {
           </div>
         )}
         <p className="mt-1 text-[10px] text-slate-400">
-          Cases per capita, not raw counts — a fairer comparison across districts of different sizes.
+          Cases per capita, not raw counts - a fairer comparison across districts of different sizes.
         </p>
       </div>
 
@@ -73,7 +73,7 @@ export default function DataVerificationCard() {
         {werError ? (
           <p className="text-xs text-slate-400">Unavailable this run.</p>
         ) : wer === null ? (
-          <p className="text-xs text-slate-400">Loading… (can take a few seconds — live PDF fetch)</p>
+          <p className="text-xs text-slate-400">Loading… (can take a few seconds - live PDF fetch)</p>
         ) : (
           <>
             <p className="text-[11px] text-slate-500">
@@ -92,7 +92,7 @@ export default function DataVerificationCard() {
           </>
         )}
         <p className="mt-1 text-[10px] text-slate-400">
-          Independent cross-check against the Epidemiology Unit's own weekly report — separate
+          Independent cross-check against the Epidemiology Unit's own weekly report - separate
           from the denguedatahub aggregated series used elsewhere on this page.
         </p>
       </div>
@@ -117,7 +117,7 @@ export default function DataVerificationCard() {
           </div>
         )}
         <p className="mt-1 text-[10px] text-slate-400">
-          Background context only — never used as input to any algorithm here.
+          Background context only - never used as input to any algorithm here.
         </p>
       </div>
     </div>

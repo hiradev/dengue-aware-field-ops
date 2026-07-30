@@ -1,12 +1,12 @@
 """
-refresh_cache.py — one-time (or periodic) local cache population.
+refresh_cache.py - one-time (or periodic) local cache population.
 
 Run this once after setup: python scripts/refresh_cache.py
 
 Fetches the live dengue dataset and writes it to app/data/srilanka_weekly_dengue.csv
 so the API has an offline fallback if the live GitHub fetch is ever unavailable.
-The API works without running this too — it tries the live fetch first on every
-request to /api/dengue-summary — but running this once means the fallback path is
+The API works without running this too - it tries the live fetch first on every
+request to /api/dengue-summary - but running this once means the fallback path is
 tested and populated, matching the notebook's cache-fallback design.
 """
 import sys

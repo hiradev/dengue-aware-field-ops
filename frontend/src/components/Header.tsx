@@ -10,7 +10,6 @@ export default function Header() {
             A* route planning + rule-based clinical triage · Colombo &amp; Gampaha, Sri Lanka
           </p>
         </div>
-        <span className="text-xs text-slate-300">7COSC013W · Coursework 1 demo app</span>
       </div>
     </header>
   );

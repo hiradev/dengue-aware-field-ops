@@ -1,9 +1,9 @@
 """
-graph_data.py — independent re-implementation for the demo API.
+graph_data.py - independent re-implementation for the demo API.
 
 This deliberately duplicates (rather than imports) the graph logic from the
 coursework notebook. Per the project's own design principle, the demo app must
-stand on its own — the notebook must remain self-contained and gradeable with
+stand on its own - the notebook must remain self-contained and gradeable with
 zero dependency on this app, and this app must not silently depend on the
 notebook's environment either.
 
@@ -11,7 +11,7 @@ Real locations across Colombo and Gampaha districts, Sri Lanka: 36 towns
 (case-cluster locations) + 8 real referral hospitals.
 
 Road distances are DERIVED FROM GEOMETRY (haversine x detour factor >= 1.15),
-never hand-estimated — this guarantees the straight-line heuristic used by A*
+never hand-estimated - this guarantees the straight-line heuristic used by A*
 is admissible by construction. See heuristics.py for the proof this is exact.
 """
 import math
@@ -109,7 +109,7 @@ def _detour_factor(straight_km: float) -> float:
 
 
 def get_edges():
-    """Edge list with distances DERIVED from geometry — admissible by construction."""
+    """Edge list with distances DERIVED from geometry - admissible by construction."""
     edges = []
     for a, b in _RAW_EDGES:
         lat1, lon1, _ = NODES[a]

@@ -1,5 +1,5 @@
 """
-census_data.py — Sri Lanka Census of Population and Housing 2024.
+census_data.py - Sri Lanka Census of Population and Housing 2024.
 
 Source: Department of Census and Statistics (DCS), Sri Lanka.
 - Preliminary Report: received by the President at the Presidential
@@ -13,7 +13,7 @@ We use the PRELIMINARY district figures for BOTH Colombo and Gampaha, because
 that is the vintage for which we have a confirmed figure for both districts
 from the same report. The final report's press release confirmed Gampaha's
 final figure (2,436,142) but our source material did not carry a matching
-final figure for Colombo specifically — rather than mix a final figure for
+final figure for Colombo specifically - rather than mix a final figure for
 one district with a preliminary figure for the other (which would silently
 compare two different vintages), we use the preliminary figures for both,
 consistently, and say so. This is exactly the kind of vintage-mixing mistake

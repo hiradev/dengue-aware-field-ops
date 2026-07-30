@@ -9,7 +9,7 @@ import TriagePanel from "../components/TriagePanel";
 import DengueSummaryCard from "../components/DengueSummaryCard";
 import DataVerificationCard from "../components/DataVerificationCard";
 
-// Leaflet and Recharts are the largest runtime deps — split them out of the
+// Leaflet and Recharts are the largest runtime deps - split them out of the
 // main bundle so the initial load doesn't pay for both up front.
 const MapView = lazy(() => import("../components/MapView"));
 const CompareChart = lazy(() => import("../components/CompareChart"));
@@ -89,7 +89,7 @@ export default function Dashboard() {
         setSummary(d);
 
         // Default the start cluster to the REAL highest-priority town, not an
-        // arbitrary hardcoded one — the whole point of wiring in live data.
+        // arbitrary hardcoded one - the whole point of wiring in live data.
         const defaultStart = d.top_priority_cluster || t[0];
         const defaultGoal = h[0];
         setStart(defaultStart);
@@ -141,7 +141,7 @@ export default function Dashboard() {
         <p className="max-w-md text-sm text-slate-600">
           {backendStatus === "checking"
             ? "Connecting to the backend…"
-            : "Waking up the backend server — free-tier hosting spins it down when idle, " +
+            : "Waking up the backend server - free-tier hosting spins it down when idle, " +
               "so this can take up to a minute."}
         </p>
         <p className="text-xs text-slate-400">Attempt {wakeAttempt} of {MAX_WAKE_ATTEMPTS}</p>

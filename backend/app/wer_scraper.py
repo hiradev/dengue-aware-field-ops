@@ -1,5 +1,5 @@
 """
-wer_scraper.py — live fetch of the Epidemiology Unit's Weekly Epidemiological
+wer_scraper.py - live fetch of the Epidemiology Unit's Weekly Epidemiological
 Report (WER), Sri Lanka's primary dengue surveillance publication.
 
 CAVEAT RESOLVED HERE (see the earlier research dossier): WER PDF filenames

@@ -52,7 +52,7 @@ export default function DengueSummaryCard({ summary }: { summary: DengueSummary 
 
       <div className="rounded border border-teal-200 bg-teal-50 p-2 text-xs text-teal-800">
         <strong>Priority cluster right now:</strong> {summary.top_priority_cluster} (
-        {summary.top_priority_district}, ~{summary.top_priority_weight} recent cases) — computed
+        {summary.top_priority_district}, ~{summary.top_priority_weight} recent cases) - computed
         from real data, not hardcoded.
       </div>
     </div>

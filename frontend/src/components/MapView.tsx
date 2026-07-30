@@ -89,7 +89,7 @@ export default function MapView({ graph, route, start, goal }: Props) {
   const pathSet = new Set(visiblePath);
 
   // While a route is actively animating (expansion or path phase still
-  // running), don't paint start/goal yet — let the reveal finish first, then
+  // running), don't paint start/goal yet - let the reveal finish first, then
   // fall back to always showing the selected start/goal (matches the
   // pre-animation behaviour for the initial/idle map state).
   const animating =
